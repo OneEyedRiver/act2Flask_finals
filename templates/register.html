@@ -1,0 +1,50 @@
+<h1>Hello World</h1>
+
+<form method="POST">
+{{ form.hidden_tag() }}
+<div>
+    {{ form.fullName.label(class='form-label') }}<br>
+    {{ form.fullName(class='form-control') }}<br>
+</div><br>
+
+<div>
+    {{ form.institution.label(class='form-label') }}<br>
+    {{ form.institution(class='form-control') }}<br>
+</div><br>
+
+<div>
+    {{ form.email.label(class='form-label') }}<br>
+    {{ form.email(class='form-control') }}<br>
+</div><br>
+
+<div>
+    {{ form.contact.label(class='form-label') }}<br>
+    {{ form.contact(class='form-control') }}<br>
+</div><br>
+
+  <div>
+        {{ form.package.label }}<br>
+        {% for package in form.package %}
+            <label>{{ package() }} {{ package.label.text }}</label><br>
+        {% endfor %}
+    </div>
+
+
+    <div>
+    {{ form.position.label(class='form-label') }}<br>
+    {{ form.position(class='form-control') }}<br>
+</div><br>
+<div>
+    {{ form.department.label(class='form-label') }}<br>
+    {{ form.department(class='form-control') }}<br>
+</div><br>
+
+<div>
+    {{ form.submit() }}<br>
+</div><br>
+
+</form>
+
+<a href="{{ url_for('index') }}">
+    <button>Back</button>
+</a>

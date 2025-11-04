@@ -1,0 +1,26 @@
+
+<form method="GET">
+    <input type="text" name="search" placeholder="search insti">
+    <button type="submit">Search</button>
+</form>
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Institution</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for users in all_users %}
+        <tr>
+            <td>{{ users.fullName }}</td>
+            <td>{{ users.institution }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a href="{{ url_for('index') }}">
+    <button>Back</button>
+</a>
