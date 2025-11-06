@@ -74,7 +74,10 @@ def register():
 
             db.session.add(newUser)
             db.session.commit()
+            flash("User Added", 'success')
             return redirect(url_for('register'))
+        else:
+            flash("Email Already Exist", "warning")
     return render_template('register.html', form=form)
 
 

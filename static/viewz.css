@@ -1,0 +1,81 @@
+/* Page container */
+.container {
+    width: 80%;
+    margin: 30px auto;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Search form style */
+form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+input[type="text"] {
+    flex: 1;
+    padding: 8px 12px;
+    font-size: 15px;
+    border: 1px solid #aaa;
+    border-radius: 5px;
+    outline: none;
+    transition: 0.3s;
+}
+
+input[type="text"]:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 3px rgba(0, 123, 255, 0.5);
+}
+
+/* Search button */
+button {
+    padding: 8px 18px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Table styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+thead {
+    background-color: #007bff;
+    color: white;
+}
+
+th, td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid #ccc;
+}
+
+/* Row hover effect */
+tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Back button container */
+.back-btn {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.back-btn button {
+    background-color: #6c757d;
+}
+
+.back-btn button:hover {
+    background-color: #545b62;
+}
