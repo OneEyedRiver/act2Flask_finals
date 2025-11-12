@@ -10,9 +10,13 @@
 {% endwith %}
 
 
-<h1>Hello World</h1>
+<form method="GET">
+    <input type="text" name="search" placeholder="search user">
+    <button type="submit">Search</button>
+</form>
 
-<form method="POST">
+
+<form method="POST" action="{{ url_for('register', id=user_id) }}">
 {{ form.hidden_tag() }}
 <div>
     {{ form.fullName.label(class='form-label') }}<br>
@@ -52,7 +56,11 @@
 </div><br>
 
 <div>
-    {{ form.submit() }}<br>
+    {{ form.reference_no.label(class='form-label') }}<br>
+    {{ form.reference_no(class='form-control') }}<br>
+</div><br>
+<div>
+    {{ form.submit(value="Update" if isUpdate else "Register", disabled=True if expired else False) }}<br>
 </div><br>
 
 </form>

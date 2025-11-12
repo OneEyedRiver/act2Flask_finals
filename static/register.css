@@ -92,6 +92,15 @@ input[type="submit"]:hover {
     background-color: #0056b3;
 }
 
+button:disabled,
+input[type="submit"]:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #ccc; /* or a color that fits your theme */
+  color: #666;
+}
+
+
 /* Back Button Wrapper */
 .back-btn {
     text-align: center;

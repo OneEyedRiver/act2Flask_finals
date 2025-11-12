@@ -22,6 +22,9 @@ class Users(db.Model):
 
     date=db.Column(db.DateTime, default=datetime.utcnow)
     position=db.Column(db.String(50), nullable=False)
+    
+    reference_no=db.Column(db.String(50), nullable=True, unique=True)
+    payment_date=db.Column(db.DateTime, nullable=True)
     department=db.Column(db.String(50), nullable=False)
 
 def __repr__(self):
@@ -48,37 +51,103 @@ class userForms(FlaskForm):
         ("BSIT", "BSIT"),
         ("BSA", "BSA"),
     ])
+    reference_no=StringField('Reference No.')
     submit= SubmitField('Enter')
 
 
 
 @app.route('/register', methods=['POST', 'GET'])
-def register():
+@app.route('/register/<int:id>', methods=['POST', 'GET'])
+def register(id = None):
     form= userForms()
+    search= request.args.get('search')
+    isUpdate=id is not None
+    user_to_edit=Users.query.get(id) if isUpdate else None
 
+    setdate= datetime(2025,11,9)
+    
+    
     if form.validate_on_submit():
-        userExistAdd=Users.query.filter_by(email=form.email.data).first()
 
-        if userExistAdd is None:
-            newUser=Users(
-                fullName=form.fullName.data,
-                institution=form.institution.data,
-                email=form.email.data,
+        if isUpdate is False:
+            userExistAdd=Users.query.filter_by(email=form.email.data).first()
 
-                contact=form.contact.data,
-                package=form.package.data,
+            if userExistAdd is None:
+                newUser=Users(
+                    fullName=form.fullName.data,
+                    institution=form.institution.data,
+                    email=form.email.data,
 
-                position=form.position.data,
-                department=form.department.data,
-            )
+                    contact=form.contact.data,
+                    package=form.package.data,
 
-            db.session.add(newUser)
-            db.session.commit()
-            flash("User Added", 'success')
-            return redirect(url_for('register'))
+                    position=form.position.data,
+                    department=form.department.data,
+
+                    reference_no=None if form.reference_no.data == "" else form.reference_no.data,
+
+                    payment_date = None if form.reference_no.data == "" else datetime.utcnow()
+
+                )
+
+                db.session.add(newUser)
+                db.session.commit()
+                flash("User Added", 'success')
+                return redirect(url_for('register'))
+            else:
+                flash("Email Already Exist", "warning")
         else:
-            flash("Email Already Exist", "warning")
-    return render_template('register.html', form=form)
+            userExistEdit=Users.query.filter(Users.email == form.email.data, Users.id != id).first()
+
+            if userExistEdit is None:
+                
+                user_to_edit.fullName=form.fullName.data
+                user_to_edit.institution=form.institution.data
+                user_to_edit.email=form.email.data
+
+                user_to_edit.contact=form.contact.data
+                user_to_edit.package=form.package.data
+
+                user_to_edit.position=form.position.data
+                user_to_edit.department=form.department.data
+
+                user_to_edit.reference_no=None if form.reference_no.data == "" else form.reference_no.data
+                user_to_edit.payment_date = None if form.reference_no.data == "" else datetime.utcnow()
+                try:
+                    db.session.commit()
+                    flash("Success Updating", "success")
+                    return redirect(url_for('register'))
+                except:
+                    flash("Failed Updating", "warning")
+    if search:
+        selected=Users.query.filter(Users.id == search).first()
+        if selected:
+            isUpdate=True
+            id=selected.id
+            form.fullName.data=selected.fullName
+            form.institution.data=selected.institution
+            form.email.data=selected.email
+
+            form.contact.data=selected.contact
+            form.package.data=selected.package
+
+            form.position.data=selected.position
+            form.department.data=selected.department
+
+            form.reference_no.data=selected.reference_no
+            flash(f"User Found:{selected.id}", 'success')
+
+
+
+
+        else:
+            flash(f"User not Found", 'warning')
+    
+    if datetime.now() > setdate:
+        expired=True
+    else:
+        expired=False
+    return render_template('register.html', form=form, isUpdate=isUpdate, user_id=id, expired=expired)
 
 
 @app.route('/', methods=['POST','GET'])
@@ -88,11 +157,34 @@ def index():
 @app.route('/viewz', methods=['POST','GET'])
 def viewz():
     search=request.args.get('search')
-
+    status_paid=request.args.get('status_paid')
     if search is None:
         all_users=Users.query.order_by(Users.date).all()
+
     else:
-        all_users=Users.query.filter(or_(
-            Users.institution.contains(search)
-        )).order_by(Users.date).all()
+        if search != "":
+            match status_paid:            
+                case 'paid':
+                    all_users=Users.query.filter(or_(
+                        Users.institution.contains(search),
+                        Users.fullName.contains(search)
+                    ), Users.reference_no.is_not(None)).order_by(Users.date).all()
+                case 'unpaid':
+                    all_users=Users.query.filter(or_(
+                        Users.institution.contains(search),
+                        Users.fullName.contains(search)
+                    ), Users.reference_no.is_(None)).order_by(Users.date).all()
+                case _:
+                        all_users=Users.query.filter(or_(
+                        Users.institution.contains(search),
+                        Users.fullName.contains(search)
+                    )).order_by(Users.date).all()
+        else:
+            match status_paid:            
+                case 'paid':
+                    all_users=Users.query.filter(Users.reference_no.is_not(None)).order_by(Users.date).all()
+                case 'unpaid':
+                    all_users=Users.query.filter(Users.reference_no.is_(None)).order_by(Users.date).all()
+                case _:
+                    all_users=Users.query.order_by(Users.date).all()
     return render_template('viewz.html', all_users=all_users)
